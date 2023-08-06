@@ -137,5 +137,20 @@ namespace FormBuilder.Controllers.Api
 
             return Ok(entityFormVms);
         }
+
+        // GET: api/EntitySchemas/5/forms
+        [HttpGet("{id}/forms/{formName}")]
+        public async Task<ActionResult> GetEntityFormByName(int id, string formName)
+        {
+            var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId == id).Where(e => e.EntityFromsName == formName).FirstOrDefaultAsync();
+
+            if (res == null)
+                return NotFound();
+
+           var formVm = new EntityFormVM() { EntityName = res.EntitySchema.EntityName, FormName = res.EntityFromsName, FormJson = res.FromJson, Id = res.EntityFromsId };
+  
+            return Ok(formVm);
+        }
+
     }
 }
