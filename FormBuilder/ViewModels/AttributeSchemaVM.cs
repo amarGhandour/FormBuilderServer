@@ -5,12 +5,9 @@ namespace FormBuilder.ViewModels
 {
     public class AttributeSchemaVM
     {
-        public int AttributeSchemaId { get; set; }
+        public int Id { get; set; }
 
-        //[ForeignKey("EntitySchema")]
-        //public int EntitySchemaId { get; set; }
-
-        public string LogicalName { get; set; }
+        public string Name { get; set; }
 
         public string DisplayName { get; set; }
 
@@ -19,11 +16,10 @@ namespace FormBuilder.ViewModels
         public int? MaxLen { get; set; }
 
         public int? MinLen { get; set; }
+        public bool Searchable { get; set; } = false;
 
-        //[ForeignKey("AttributeType")]
-        //public int AttributeTypeId { get; set; }
-
-        public string AttributeType { get; set; }
+        public bool Active { get; set; } = false; 
+        public string Type { get; set; }
 
     }
 }

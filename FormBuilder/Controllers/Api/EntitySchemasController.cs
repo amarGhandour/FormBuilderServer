@@ -48,8 +48,8 @@ namespace FormBuilder.Controllers.Api
             foreach (var attribute in entitySchema.AttributeSchemas)
             {
                 var attributeVm = new AttributeSchemaVM() { 
-                    AttributeSchemaId = attribute.AttributeSchemaId,
-                    AttributeType = attribute.AttributeType.AttributeName, DisplayName = attribute.DisplayName, IsRequired = attribute.IsRequired, LogicalName = attribute.LogicalName
+                    Id = attribute.AttributeSchemaId,
+                    Type = attribute.AttributeType.AttributeName, DisplayName = attribute.DisplayName, IsRequired = attribute.IsRequired, Name = attribute.LogicalName
                 , MaxLen = attribute.MaxLen, MinLen = attribute.MinLen};
 
                 attributesVM.Add(attributeVm);
