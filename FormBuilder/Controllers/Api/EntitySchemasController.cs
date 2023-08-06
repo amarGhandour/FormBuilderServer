@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FormBuilder.Models;
+using FormBuilder.ViewModels;
 
 namespace FormBuilder.Controllers.Api
 {
@@ -31,14 +32,31 @@ namespace FormBuilder.Controllers.Api
         [HttpGet("{id}")]
         public async Task<ActionResult> GetEntitySchema(int id)
         {
-            var entitySchema =  _context.entitySchemas.Include(e => e.AttributeSchemas).ToList();
+            var entitySchema =  _context.entitySchemas.Include(e => e.AttributeSchemas)
+                .ThenInclude(e => e.AttributeType)
+                .Where(e => e.EntitySchemaId == id).FirstOrDefault();
 
             if (entitySchema == null)
             {
                 return NotFound();
             }
 
-            return Ok(entitySchema);
+            var entitySchemaVm = new EntitySchemaVM()
+            { EntityCode = entitySchema.EntityCode, EntitySchemaId = entitySchema.EntitySchemaId, EntityName = entitySchema.EntityName };
+
+            var attributesVM = new HashSet<AttributeSchemaVM>();
+            foreach (var attribute in entitySchema.AttributeSchemas)
+            {
+                var attributeVm = new AttributeSchemaVM() { 
+                    AttributeSchemaId = attribute.AttributeSchemaId,
+                    AttributeType = attribute.AttributeType.AttributeName, DisplayName = attribute.DisplayName, IsRequired = attribute.IsRequired, LogicalName = attribute.LogicalName
+                , MaxLen = attribute.MaxLen, MinLen = attribute.MinLen};
+
+                attributesVM.Add(attributeVm);
+
+            }
+            entitySchemaVm.AttributeSchemas = attributesVM;
+            return Ok(entitySchemaVm);
         }
 
         // PUT: api/EntitySchemas/5
@@ -107,9 +125,17 @@ namespace FormBuilder.Controllers.Api
         [HttpGet("{id}/forms")]
         public async Task<ActionResult> GetEntityForms(int id)
         {
-            var res = await _context.EntityFroms.Where(e => e.EntitySchemaId == id).ToListAsync();
+            var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId == id).ToListAsync();
 
-            return Ok(res);
+            var entityFormVms = new List<EntityFormVM>();
+
+            foreach(var form in res)
+            {
+                var formVm = new EntityFormVM() { EntityName = form.EntitySchema.EntityName, FormName = form.EntityFromsName, FormJson = form.FromJson, Id = form.EntityFromsId };
+                entityFormVms.Add(formVm);
+            }
+
+            return Ok(entityFormVms);
         }
     }
 }
