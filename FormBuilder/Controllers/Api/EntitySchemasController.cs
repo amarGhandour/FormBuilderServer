@@ -168,17 +168,31 @@ namespace FormBuilder.Controllers.Api
             return Ok(entityFormVms);
         }
 
-        // GET: api/EntitySchemas/5/forms
-        [HttpGet("{id}/forms/{formName}")]
-        public async Task<ActionResult> GetEntityFormByName(int id, string formName)
+        // GET: api/EntitySchemas/5/forms/default
+        //[HttpGet("{id}/forms/{formName}")]
+        //public async Task<ActionResult> GetEntityFormByName(int id, string formName)
+        //{
+        //    var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId == id).Where(e => e.EntityFromsName == formName).FirstOrDefaultAsync();
+
+        //    if (res == null)
+        //        return NotFound();
+
+        //   var formVm = new EntityFormVM() { EntityName = res.EntitySchema.EntityName, FormName = res.EntityFromsName, FormJson = res.FromJson, Id = res.EntityFromsId };
+  
+        //    return Ok(formVm);
+        //}
+
+        // GET: api/EntitySchemas/5/forms/1
+        [HttpGet("{id}/forms/{formId}")]
+        public async Task<ActionResult> GetEntityFormById(int id, int formId)
         {
-            var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId == id).Where(e => e.EntityFromsName == formName).FirstOrDefaultAsync();
+            var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId == id && e.EntityFromsId == formId).FirstOrDefaultAsync();
 
             if (res == null)
                 return NotFound();
 
-           var formVm = new EntityFormVM() { EntityName = res.EntitySchema.EntityName, FormName = res.EntityFromsName, FormJson = res.FromJson, Id = res.EntityFromsId };
-  
+            var formVm = new EntityFormVM() { EntityName = res.EntitySchema.EntityName, FormName = res.EntityFromsName, FormJson = res.FromJson, Id = res.EntityFromsId };
+
             return Ok(formVm);
         }
 

@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using FormBuilder.Interfaces;
 
 namespace FormBuilder.Models
 {
-    public class AttributeSchemaOptionSetValue
+    public class AttributeSchemaOptionSetValue: IEntityBase
     {
         public int Id { get; set; }
 

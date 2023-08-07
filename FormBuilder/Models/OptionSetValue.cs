@@ -1,8 +1,9 @@
 ﻿using FormBuilder.Controllers.Api;
+using FormBuilder.Interfaces;
 
 namespace FormBuilder.Models
 {
-    public class OptionSetValue
+    public class OptionSetValue : IEntityBase, ISoftDeletable
     {
         public int Id { get; set; }
 

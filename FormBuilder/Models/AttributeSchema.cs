@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.Design;
+using FormBuilder.Interfaces;
 
 namespace FormBuilder.Models
 {
-    public class AttributeSchema
+    public class AttributeSchema: IEntityBase, ISoftDeletable
     {
         public int AttributeSchemaId { get; set; }
 

@@ -1,6 +1,8 @@
-﻿namespace FormBuilder.Models
+﻿using FormBuilder.Interfaces;
+
+namespace FormBuilder.Models
 {
-    public class EntitySchema: IEntityBase
+    public class EntitySchema: IEntityBase, ISoftDeletable
     {
         public int EntitySchemaId { get; set; }
 

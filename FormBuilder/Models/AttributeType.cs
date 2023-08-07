@@ -1,10 +1,11 @@
 ﻿using FormBuilder.Controllers.Api;
+using FormBuilder.Interfaces;
 
 namespace FormBuilder.Models
 {
 
-   
-    public class AttributeType
+
+    public class AttributeType: IEntityBase, ISoftDeletable
     {
         public int AttributeTypeId { get; set; }
 
