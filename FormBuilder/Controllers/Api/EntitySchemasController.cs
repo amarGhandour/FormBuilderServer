@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FormBuilder.Models;
-using FormBuilder.ViewModels;
+using FormBuilder.ViewModels.AttributeSchema;
+using FormBuilder.ViewModels.EntityForm;
+using FormBuilder.ViewModels.EntitySchema;
 
 namespace FormBuilder.Controllers.Api
 {
@@ -61,8 +63,9 @@ namespace FormBuilder.Controllers.Api
 
         // PUT: api/EntitySchemas/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEntitySchema(int id, EntitySchema entitySchema)
+        public async Task<IActionResult> PutEntitySchema(int id, EntitySchemaRequestVM entitySchemaRequest)
         {
+            var entitySchema = _context.entitySchemas.FirstOrDefault(e => e.EntitySchemaId == id);
             if (id != entitySchema.EntitySchemaId)
             {
                 return BadRequest();
@@ -91,9 +94,22 @@ namespace FormBuilder.Controllers.Api
 
         // POST: api/EntitySchemas
         [HttpPost]
-        public async Task<ActionResult<EntitySchema>> PostEntitySchema(EntitySchema entitySchema)
+        public async Task<ActionResult<EntitySchema>> PostEntitySchema(EntitySchemaRequestVM entitySchemaRequest)
         {
+            if (entitySchemaRequest == null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var entitySchema = new EntitySchema() { EntityName = entitySchemaRequest.EntityName, EntityCode = entitySchemaRequest.EntityCode};
+
             _context.entitySchemas.Add(entitySchema);
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEntitySchema", new { id = entitySchema.EntitySchemaId }, entitySchema);

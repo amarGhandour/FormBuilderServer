@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FormBuilder.Models.Tables;
+using Microsoft.EntityFrameworkCore;
 
 namespace FormBuilder.Models
 {
@@ -13,5 +14,11 @@ namespace FormBuilder.Models
         public DbSet<EntityFroms> EntityFroms { get; set; }
 
         public DbSet<AttributeType> AttributeTypes { get; set; }
+
+
+        // tables entities
+        public DbSet<Employee> Employees { get; set; }
+
+        public DbSet<Department> Departments { get; set; }
     }
 }

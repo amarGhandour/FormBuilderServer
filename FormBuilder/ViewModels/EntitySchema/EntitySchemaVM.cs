@@ -1,6 +1,7 @@
 ﻿using FormBuilder.Models;
+using FormBuilder.ViewModels.AttributeSchema;
 
-namespace FormBuilder.ViewModels
+namespace FormBuilder.ViewModels.EntitySchema
 {
     public class EntitySchemaVM
     {

@@ -1,7 +1,7 @@
 ﻿using FormBuilder.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FormBuilder.ViewModels
+namespace FormBuilder.ViewModels.EntityForm
 {
     public class EntityFormVM
     {

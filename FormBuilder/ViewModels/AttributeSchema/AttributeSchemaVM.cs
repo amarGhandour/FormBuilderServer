@@ -1,7 +1,7 @@
 ﻿using FormBuilder.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FormBuilder.ViewModels
+namespace FormBuilder.ViewModels.AttributeSchema
 {
     public class AttributeSchemaVM
     {
@@ -18,7 +18,7 @@ namespace FormBuilder.ViewModels
         public int? MinLen { get; set; }
         public bool Searchable { get; set; } = false;
 
-        public bool Active { get; set; } = false; 
+        public bool Active { get; set; } = false;
         public string Type { get; set; }
 
     }

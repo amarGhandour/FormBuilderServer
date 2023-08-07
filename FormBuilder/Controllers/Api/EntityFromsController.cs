@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FormBuilder.Models;
+using FormBuilder.ViewModels.EntityForm;
 
 namespace FormBuilder.Controllers.Api
 {
@@ -73,12 +74,34 @@ namespace FormBuilder.Controllers.Api
 
         // POST: api/EntityFroms
         [HttpPost]
-        public async Task<ActionResult<EntityFroms>> PostEntityFroms(EntityFroms entityFroms)
+        public async Task<ActionResult<EntityFroms>> PostEntityFroms(EntityFormCreateVM entityFormVm)
         {
-            _context.EntityFroms.Add(entityFroms);
+            
+            if (entityFormVm == null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+
+            }
+
+            // check entity schema is exist
+            var entitySchema =  _context.entitySchemas.FirstOrDefault(e => e.EntitySchemaId == entityFormVm.EntityId);
+            if (entitySchema == null)
+                return BadRequest("Entity Id does't exist.");
+
+
+            var entityFormJson = new EntityFroms() { EntityFromsName = entityFormVm.formName, EntitySchemaId = entityFormVm.EntityId, FromJson = entityFormVm.formJson };
+
+            _context.EntityFroms.Add(entityFormJson);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEntityFroms", new { id = entityFroms.EntityFromsId }, entityFroms);
+
+            return Created("GetEntityFroms", null);
         }
 
         // DELETE: api/EntityFroms/5
