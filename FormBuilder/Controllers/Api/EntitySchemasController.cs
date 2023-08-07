@@ -52,7 +52,7 @@ namespace FormBuilder.Controllers.Api
                 var attributeVm = new AttributeSchemaVM() { 
                     Id = attribute.AttributeSchemaId,
                     Type = attribute.AttributeType.AttributeName, DisplayName = attribute.DisplayName, IsRequired = attribute.IsRequired, Name = attribute.LogicalName
-                , MaxLen = attribute.MaxLen, MinLen = attribute.MinLen};
+                , MaxLen = attribute.MaxLen, MinLen = attribute.MinLen, Active = attribute.IsActive, Searchable = attribute.IsSearchable};
 
                 attributesVM.Add(attributeVm);
 

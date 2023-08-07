@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.Design;
 
 namespace FormBuilder.Models
 {
@@ -14,6 +15,10 @@ namespace FormBuilder.Models
         public string DisplayName { get; set; }
 
         public bool IsRequired { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public bool IsSearchable { get; set; }
 
         public int? MaxLen { get; set; }
 
