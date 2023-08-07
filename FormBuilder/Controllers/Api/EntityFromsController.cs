@@ -23,9 +23,16 @@ namespace FormBuilder.Controllers.Api
 
         // GET: api/EntityFroms
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EntityFroms>>> GetEntityFroms()
+        public async Task<ActionResult<IEnumerable<EntityFroms>>> GetEntityFroms(string formName)
         {
-            return await _context.EntityFroms.ToListAsync();
+            var query = _context.EntityFroms.AsQueryable();
+
+            if (formName != null)
+            {
+               query = query.Where(e => e.EntityFromsName == formName);
+            }
+
+            return await query.ToListAsync();
         }
 
         // GET: api/EntityFroms/5
