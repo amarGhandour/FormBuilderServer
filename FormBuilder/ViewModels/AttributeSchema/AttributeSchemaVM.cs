@@ -18,8 +18,10 @@ namespace FormBuilder.ViewModels.AttributeSchema
         public int? MinLen { get; set; }
         public bool Searchable { get; set; } = false;
 
-        public bool Active { get; set; } = false;
+        //public bool Active { get; set; } = false;
         public string Type { get; set; }
+
+        public Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
 
     }
 }

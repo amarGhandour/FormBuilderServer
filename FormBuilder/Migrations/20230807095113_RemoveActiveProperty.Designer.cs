@@ -4,6 +4,7 @@ using FormBuilder.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FormBuilder.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230807095113_RemoveActiveProperty")]
+    partial class RemoveActiveProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,29 +64,6 @@ namespace FormBuilder.Migrations
                     b.HasIndex("EntitySchemaId");
 
                     b.ToTable("AttributeSchemas");
-                });
-
-            modelBuilder.Entity("FormBuilder.Models.AttributeSchemaOptionSetValue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AttributeSchemaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OptionSetValueId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttributeSchemaId");
-
-                    b.HasIndex("OptionSetValueId");
-
-                    b.ToTable("AttributeSchemaOptionSetValues");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.AttributeType", b =>
@@ -146,25 +126,6 @@ namespace FormBuilder.Migrations
                     b.HasKey("EntitySchemaId");
 
                     b.ToTable("entitySchemas");
-                });
-
-            modelBuilder.Entity("FormBuilder.Models.OptionSetValue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OptionSetValues");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.Tables.Department", b =>
@@ -230,25 +191,6 @@ namespace FormBuilder.Migrations
                     b.Navigation("AttributeType");
                 });
 
-            modelBuilder.Entity("FormBuilder.Models.AttributeSchemaOptionSetValue", b =>
-                {
-                    b.HasOne("FormBuilder.Models.AttributeSchema", "AttributeSchema")
-                        .WithMany("AttributeTypesOptionSetValues")
-                        .HasForeignKey("AttributeSchemaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FormBuilder.Models.OptionSetValue", "OptionSetValue")
-                        .WithMany("AttributeTypesOptionSetValues")
-                        .HasForeignKey("OptionSetValueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AttributeSchema");
-
-                    b.Navigation("OptionSetValue");
-                });
-
             modelBuilder.Entity("FormBuilder.Models.EntityFroms", b =>
                 {
                     b.HasOne("FormBuilder.Models.EntitySchema", "EntitySchema")
@@ -271,19 +213,9 @@ namespace FormBuilder.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("FormBuilder.Models.AttributeSchema", b =>
-                {
-                    b.Navigation("AttributeTypesOptionSetValues");
-                });
-
             modelBuilder.Entity("FormBuilder.Models.EntitySchema", b =>
                 {
                     b.Navigation("AttributeSchemas");
-                });
-
-            modelBuilder.Entity("FormBuilder.Models.OptionSetValue", b =>
-                {
-                    b.Navigation("AttributeTypesOptionSetValues");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.Tables.Department", b =>

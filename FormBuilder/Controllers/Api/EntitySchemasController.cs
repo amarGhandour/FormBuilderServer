@@ -52,8 +52,22 @@ namespace FormBuilder.Controllers.Api
                 var attributeVm = new AttributeSchemaVM() { 
                     Id = attribute.AttributeSchemaId,
                     Type = attribute.AttributeType.AttributeName, DisplayName = attribute.DisplayName, IsRequired = attribute.IsRequired, Name = attribute.LogicalName
-                , MaxLen = attribute.MaxLen, MinLen = attribute.MinLen, Active = attribute.IsActive, Searchable = attribute.IsSearchable};
+                , MaxLen = attribute.MaxLen, MinLen = attribute.MinLen, Searchable = attribute.IsSearchable};
 
+                if (attribute.AttributeType.AttributeName == "option set" || attribute.AttributeType.AttributeName == "two options")
+                {
+                    var optionSetValues = _context.AttributeSchemaOptionSetValues
+                   .Include(e => e.AttributeSchema ).Include(e => e.OptionSetValue)
+                   .Where(e => e.AttributeSchemaId == attribute.AttributeSchemaId)
+                   .Select(e => e.OptionSetValue).ToList();
+
+                    foreach (var option in optionSetValues)
+                    {
+                        attributeVm.Options.Add(option.Name, option.Value);
+                    }
+
+
+                }
                 attributesVM.Add(attributeVm);
 
             }

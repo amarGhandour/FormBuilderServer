@@ -1,4 +1,5 @@
-﻿using FormBuilder.Models.Tables;
+﻿using FormBuilder.Controllers.Api;
+using FormBuilder.Models.Tables;
 using Microsoft.EntityFrameworkCore;
 
 namespace FormBuilder.Models
@@ -15,6 +16,9 @@ namespace FormBuilder.Models
 
         public DbSet<AttributeType> AttributeTypes { get; set; }
 
+        public DbSet<OptionSetValue> OptionSetValues { get; set; }
+
+        public DbSet<AttributeSchemaOptionSetValue> AttributeSchemaOptionSetValues { get; set; }
 
         // tables entities
         public DbSet<Employee> Employees { get; set; }

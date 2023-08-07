@@ -1,4 +1,6 @@
-﻿namespace FormBuilder.Models
+﻿using FormBuilder.Controllers.Api;
+
+namespace FormBuilder.Models
 {
 
    
@@ -9,5 +11,6 @@
         public string AttributeName { get; set; }
 
         public string SqlType { get; set; }
+
     }
 }

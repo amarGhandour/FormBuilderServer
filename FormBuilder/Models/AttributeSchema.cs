@@ -16,9 +16,9 @@ namespace FormBuilder.Models
 
         public bool IsRequired { get; set; }
 
-        public bool IsActive { get; set; }
+        //public bool IsActive { get; set; } = false;
 
-        public bool IsSearchable { get; set; }
+        public bool IsSearchable { get; set; } = false;
 
         public int? MaxLen { get; set; }
 
@@ -30,6 +30,9 @@ namespace FormBuilder.Models
         public AttributeType AttributeType { get; set; }
 
         EntitySchema EntitySchema { get; set; }
+
+        public ICollection<AttributeSchemaOptionSetValue> AttributeTypesOptionSetValues { get; set; } = new HashSet<AttributeSchemaOptionSetValue>();
+
 
     }
 }
