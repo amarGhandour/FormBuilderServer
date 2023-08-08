@@ -16,13 +16,17 @@ namespace FormBuilder.Models
 
         public DbSet<AttributeType> AttributeTypes { get; set; }
 
+        public DbSet<OptionSetType> OptionSets { get; set; }    
         public DbSet<OptionSetValue> OptionSetValues { get; set; }
 
-        public DbSet<AttributeSchemaOptionSetValue> AttributeSchemaOptionSetValues { get; set; }
+        //public DbSet<AttributeSchemaOptionSetValue> AttributeSchemaOptionSetValues { get; set; }
+        //public DbSet<AttributeSchemaOptionSetType> AttributeSchemaOptionSetTypes { get; set; } 
+
 
         // tables entities
         public DbSet<Employee> Employees { get; set; }
 
         public DbSet<Department> Departments { get; set; }
+
     }
 }

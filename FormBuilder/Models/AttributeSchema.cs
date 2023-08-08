@@ -30,9 +30,16 @@ namespace FormBuilder.Models
 
         public AttributeType AttributeType { get; set; }
 
-        EntitySchema EntitySchema { get; set; }
+        public EntitySchema EntitySchema { get; set; }
 
-        public ICollection<AttributeSchemaOptionSetValue> AttributeTypesOptionSetValues { get; set; } = new HashSet<AttributeSchemaOptionSetValue>();
+        // public AttributeSchemaOptionSetType AttributeSchemaOptionSet { get; set; }
+
+        [ForeignKey("OptionSetType")]
+        public int? OptionSetTypeId { get; set; }
+        public OptionSetType OptionSetType { get; set; }
+
+        // public ICollection<AttributeSchemaOptionSetValue> AttributeTypesOptionSetValues { get; set; } = new HashSet<AttributeSchemaOptionSetValue>();
+
 
 
     }

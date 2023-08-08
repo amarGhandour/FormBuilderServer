@@ -54,36 +54,18 @@ namespace FormBuilder.Migrations
                     b.Property<int?>("MinLen")
                         .HasColumnType("int");
 
+                    b.Property<int?>("OptionSetTypeId")
+                        .HasColumnType("int");
+
                     b.HasKey("AttributeSchemaId");
 
                     b.HasIndex("AttributeTypeId");
 
                     b.HasIndex("EntitySchemaId");
 
+                    b.HasIndex("OptionSetTypeId");
+
                     b.ToTable("AttributeSchemas");
-                });
-
-            modelBuilder.Entity("FormBuilder.Models.AttributeSchemaOptionSetValue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AttributeSchemaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OptionSetValueId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AttributeSchemaId");
-
-                    b.HasIndex("OptionSetValueId");
-
-                    b.ToTable("AttributeSchemaOptionSetValues");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.AttributeType", b =>
@@ -148,6 +130,25 @@ namespace FormBuilder.Migrations
                     b.ToTable("entitySchemas");
                 });
 
+            modelBuilder.Entity("FormBuilder.Models.OptionSetType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsGlobal")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OptionSets");
+                });
+
             modelBuilder.Entity("FormBuilder.Models.OptionSetValue", b =>
                 {
                     b.Property<int>("Id")
@@ -159,10 +160,15 @@ namespace FormBuilder.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("OptionSetTypeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OptionSetTypeId");
 
                     b.ToTable("OptionSetValues");
                 });
@@ -227,26 +233,11 @@ namespace FormBuilder.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FormBuilder.Models.OptionSetType", null)
+                        .WithMany("AttributeSchemas")
+                        .HasForeignKey("OptionSetTypeId");
+
                     b.Navigation("AttributeType");
-                });
-
-            modelBuilder.Entity("FormBuilder.Models.AttributeSchemaOptionSetValue", b =>
-                {
-                    b.HasOne("FormBuilder.Models.AttributeSchema", "AttributeSchema")
-                        .WithMany("AttributeTypesOptionSetValues")
-                        .HasForeignKey("AttributeSchemaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FormBuilder.Models.OptionSetValue", "OptionSetValue")
-                        .WithMany("AttributeTypesOptionSetValues")
-                        .HasForeignKey("OptionSetValueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AttributeSchema");
-
-                    b.Navigation("OptionSetValue");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.EntityFroms", b =>
@@ -260,6 +251,17 @@ namespace FormBuilder.Migrations
                     b.Navigation("EntitySchema");
                 });
 
+            modelBuilder.Entity("FormBuilder.Models.OptionSetValue", b =>
+                {
+                    b.HasOne("FormBuilder.Models.OptionSetType", "OptionSetType")
+                        .WithMany("OptionSetValues")
+                        .HasForeignKey("OptionSetTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OptionSetType");
+                });
+
             modelBuilder.Entity("FormBuilder.Models.Tables.Employee", b =>
                 {
                     b.HasOne("FormBuilder.Models.Tables.Department", "Department")
@@ -271,19 +273,16 @@ namespace FormBuilder.Migrations
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("FormBuilder.Models.AttributeSchema", b =>
-                {
-                    b.Navigation("AttributeTypesOptionSetValues");
-                });
-
             modelBuilder.Entity("FormBuilder.Models.EntitySchema", b =>
                 {
                     b.Navigation("AttributeSchemas");
                 });
 
-            modelBuilder.Entity("FormBuilder.Models.OptionSetValue", b =>
+            modelBuilder.Entity("FormBuilder.Models.OptionSetType", b =>
                 {
-                    b.Navigation("AttributeTypesOptionSetValues");
+                    b.Navigation("AttributeSchemas");
+
+                    b.Navigation("OptionSetValues");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.Tables.Department", b =>

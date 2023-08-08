@@ -58,12 +58,17 @@ namespace FormBuilder.Controllers.Api
 
                 if (attribute.AttributeType.AttributeName == "option set" || attribute.AttributeType.AttributeName == "two options")
                 {
-                    var optionSetValues = _context.AttributeSchemaOptionSetValues
-                   .Include(e => e.AttributeSchema ).Include(e => e.OptionSetValue)
-                   .Where(e => e.AttributeSchemaId == attribute.AttributeSchemaId)
-                   .Select(e => e.OptionSetValue).ToList();
 
-                    foreach (var option in optionSetValues)
+                    var lookupPatternId = attribute.OptionSetTypeId;
+                    var optionsValues = await _context.OptionSetValues.Where(e => e.OptionSetTypeId == lookupPatternId).ToListAsync();
+
+                    // var optionSetValues = _context.AttributeSchemaOptionSetTypes
+                    //.Include(e => e.AttributeSchema ).Include(e => e.OptionSetTypeId)
+                    //.Where(e => e.AttributeSchemaId == attribute.AttributeSchemaId)
+                    //.Select(e => e.OptionSetType).ToList();
+
+
+                    foreach (var option in optionsValues)
                     {
                         attributeVm.Options.Add(option.Name, option.Value);
                     }
