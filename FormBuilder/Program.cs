@@ -1,4 +1,6 @@
+using FormBuilder.Interfaces.Repositories;
 using FormBuilder.Models;
+using FormBuilder.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Connection1"));
 });
+
+builder.Services.AddScoped<IEntitySchemaRepository, EntitySchemaRepository>();
+builder.Services.AddScoped<IEntityFormRepository, EntityFormRepository>();
+
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 

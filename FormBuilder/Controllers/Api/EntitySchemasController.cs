@@ -9,6 +9,8 @@ using FormBuilder.Models;
 using FormBuilder.ViewModels.AttributeSchema;
 using FormBuilder.ViewModels.EntityForm;
 using FormBuilder.ViewModels.EntitySchema;
+using FormBuilder.Interfaces.Repositories;
+using Microsoft.VisualBasic;
 
 namespace FormBuilder.Controllers.Api
 {
@@ -17,26 +19,26 @@ namespace FormBuilder.Controllers.Api
     public class EntitySchemasController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEntitySchemaRepository entitySchemaRepository;
 
-        public EntitySchemasController(ApplicationDbContext context)
+        public EntitySchemasController(ApplicationDbContext context, IEntitySchemaRepository entitySchemaRepository)
         {
             _context = context;
+            this.entitySchemaRepository = entitySchemaRepository;
         }
 
         // GET: api/EntitySchemas
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EntitySchema>>> GetentitySchemas()
         {
-            return await _context.entitySchemas.ToListAsync();
+            return  Ok(await entitySchemaRepository.GetAllAsync());
         }
 
         // GET: api/EntitySchemas/5
         [HttpGet("{id}")]
         public async Task<ActionResult> GetEntitySchema(int id)
         {
-            var entitySchema =  _context.entitySchemas.Include(e => e.AttributeSchemas)
-                .ThenInclude(e => e.AttributeType)
-                .Where(e => e.EntitySchemaId == id).FirstOrDefault();
+            var entitySchema = await entitySchemaRepository.GetByIdAsync(id);
 
             if (entitySchema == null)
             {
