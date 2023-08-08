@@ -62,12 +62,6 @@ namespace FormBuilder.Controllers.Api
                     var lookupPatternId = attribute.OptionSetTypeId;
                     var optionsValues = await _context.OptionSetValues.Where(e => e.OptionSetTypeId == lookupPatternId).ToListAsync();
 
-                    // var optionSetValues = _context.AttributeSchemaOptionSetTypes
-                    //.Include(e => e.AttributeSchema ).Include(e => e.OptionSetTypeId)
-                    //.Where(e => e.AttributeSchemaId == attribute.AttributeSchemaId)
-                    //.Select(e => e.OptionSetType).ToList();
-
-
                     foreach (var option in optionsValues)
                     {
                         attributeVm.Options.Add(option.Name, option.Value);
