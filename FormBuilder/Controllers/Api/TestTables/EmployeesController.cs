@@ -97,7 +97,16 @@ namespace FormBuilder.Controllers.Api.TestTables
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
+            var employeeResponse = new EmployeeResponseVM()
+            {
+                departmentName = department.Name,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Id = employee.Id,
+                Salary = employee.Salary,
+                StartDate = employee.StartDate
+            };
+            return CreatedAtAction("GetEmployee", new { id = employee.Id }, employeeResponse);
         }
 
         // DELETE: api/Employees/5
