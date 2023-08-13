@@ -5,7 +5,7 @@ namespace FormBuilder.ViewModels.EntityForm
 {
     public class EntityFormVM
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string FormName { get; set; }
 

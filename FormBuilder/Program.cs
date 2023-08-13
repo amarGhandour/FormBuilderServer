@@ -2,6 +2,7 @@ using FormBuilder.Interfaces.Repositories;
 using FormBuilder.Models;
 using FormBuilder.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
 
 builder.Services.AddScoped<IEntitySchemaRepository, EntitySchemaRepository>();
 builder.Services.AddScoped<IEntityFormRepository, EntityFormRepository>();
+builder.Services.AddScoped<IAttributeSchemaRepository, AttributeSchemaRepository>();
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -31,6 +33,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 

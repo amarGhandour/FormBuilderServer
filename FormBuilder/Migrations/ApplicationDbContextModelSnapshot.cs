@@ -24,20 +24,21 @@ namespace FormBuilder.Migrations
 
             modelBuilder.Entity("FormBuilder.Models.AttributeSchema", b =>
                 {
-                    b.Property<int>("AttributeSchemaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<Guid>("EntitySchemaId")
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttributeSchemaId"));
+                    b.Property<string>("LogicalName")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("AttributeTypeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AttributeSchemaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AttributeTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DisplayName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EntitySchemaId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsRequired")
                         .HasColumnType("bit");
@@ -45,23 +46,18 @@ namespace FormBuilder.Migrations
                     b.Property<bool>("IsSearchable")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LogicalName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("MaxLen")
                         .HasColumnType("int");
 
                     b.Property<int?>("MinLen")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OptionSetTypeId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("OptionSetTypeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("AttributeSchemaId");
+                    b.HasKey("EntitySchemaId", "LogicalName");
 
                     b.HasIndex("AttributeTypeId");
-
-                    b.HasIndex("EntitySchemaId");
 
                     b.HasIndex("OptionSetTypeId");
 
@@ -70,16 +66,16 @@ namespace FormBuilder.Migrations
 
             modelBuilder.Entity("FormBuilder.Models.AttributeType", b =>
                 {
-                    b.Property<int>("AttributeTypeId")
+                    b.Property<Guid>("AttributeTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttributeTypeId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AttributeName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SqlType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AttributeTypeId");
@@ -89,19 +85,19 @@ namespace FormBuilder.Migrations
 
             modelBuilder.Entity("FormBuilder.Models.EntityFroms", b =>
                 {
-                    b.Property<int>("EntityFromsId")
+                    b.Property<Guid>("EntityFromsId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EntityFromsId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EntityFromsName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EntitySchemaId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EntitySchemaId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FromJson")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("EntityFromsId");
@@ -113,35 +109,42 @@ namespace FormBuilder.Migrations
 
             modelBuilder.Entity("FormBuilder.Models.EntitySchema", b =>
                 {
-                    b.Property<int>("EntitySchemaId")
+                    b.Property<Guid>("EntitySchemaId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EntitySchemaId"));
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EntityCode")
                         .HasColumnType("int");
 
                     b.Property<string>("EntityName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("EntitySchemaId");
+
+                    b.HasIndex("EntityName")
+                        .IsUnique();
 
                     b.ToTable("entitySchemas");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.OptionSetType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsGlobal")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -151,22 +154,16 @@ namespace FormBuilder.Migrations
 
             modelBuilder.Entity("FormBuilder.Models.OptionSetValue", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OptionSetTypeId")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.Property<Guid>("OptionSetTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Name", "Value", "OptionSetTypeId");
 
                     b.HasIndex("OptionSetTypeId");
 
@@ -222,28 +219,32 @@ namespace FormBuilder.Migrations
             modelBuilder.Entity("FormBuilder.Models.AttributeSchema", b =>
                 {
                     b.HasOne("FormBuilder.Models.AttributeType", "AttributeType")
-                        .WithMany()
+                        .WithMany("AttributeSchemas")
                         .HasForeignKey("AttributeTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FormBuilder.Models.EntitySchema", null)
+                    b.HasOne("FormBuilder.Models.EntitySchema", "EntitySchema")
                         .WithMany("AttributeSchemas")
                         .HasForeignKey("EntitySchemaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FormBuilder.Models.OptionSetType", null)
+                    b.HasOne("FormBuilder.Models.OptionSetType", "OptionSetType")
                         .WithMany("AttributeSchemas")
                         .HasForeignKey("OptionSetTypeId");
 
                     b.Navigation("AttributeType");
+
+                    b.Navigation("EntitySchema");
+
+                    b.Navigation("OptionSetType");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.EntityFroms", b =>
                 {
                     b.HasOne("FormBuilder.Models.EntitySchema", "EntitySchema")
-                        .WithMany()
+                        .WithMany("EntityFroms")
                         .HasForeignKey("EntitySchemaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -273,9 +274,16 @@ namespace FormBuilder.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("FormBuilder.Models.AttributeType", b =>
+                {
+                    b.Navigation("AttributeSchemas");
+                });
+
             modelBuilder.Entity("FormBuilder.Models.EntitySchema", b =>
                 {
                     b.Navigation("AttributeSchemas");
+
+                    b.Navigation("EntityFroms");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.OptionSetType", b =>

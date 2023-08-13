@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FormBuilder.Models;
+using FormBuilder.ViewModels.AttributeSchema;
+using FormBuilder.Repositories;
+using AutoMapper;
 
 namespace FormBuilder.Controllers.Api
 {
@@ -14,10 +17,14 @@ namespace FormBuilder.Controllers.Api
     public class AttributeSchemasController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly AttributeSchemaRepository attributeSchemaRepository;
+        private readonly IMapper mapper;
 
-        public AttributeSchemasController(ApplicationDbContext context)
+        public AttributeSchemasController(ApplicationDbContext context, AttributeSchemaRepository attributeSchemaRepository, IMapper mapper)
         {
             _context = context;
+            this.attributeSchemaRepository = attributeSchemaRepository;
+            this.mapper = mapper;
         }
 
         // GET: api/AttributeSchemas
@@ -43,9 +50,9 @@ namespace FormBuilder.Controllers.Api
 
         // PUT: api/AttributeSchemas/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAttributeSchema(int id, AttributeSchema attributeSchema)
+        public async Task<IActionResult> PutAttributeSchema(string id, AttributeSchema attributeSchema)
         {
-            if (id != attributeSchema.AttributeSchemaId)
+            if (id != attributeSchema.AttributeSchemaId.ToString())
             {
                 return BadRequest();
             }
@@ -73,10 +80,11 @@ namespace FormBuilder.Controllers.Api
 
         // POST: api/AttributeSchemas
         [HttpPost]
-        public async Task<ActionResult<AttributeSchema>> PostAttributeSchema(AttributeSchema attributeSchema)
+        public async Task<ActionResult<AttributeSchema>> PostAttributeSchema(AttributeSchemaRequestVM attributeSchemaRequest)
         {
-            _context.AttributeSchemas.Add(attributeSchema);
-            await _context.SaveChangesAsync();
+            var attributeSchema = mapper.Map<AttributeSchema>(attributeSchemaRequest);
+
+            attributeSchema = await attributeSchemaRepository.AddAsync(attributeSchema);
 
             return CreatedAtAction("GetAttributeSchema", new { id = attributeSchema.AttributeSchemaId }, attributeSchema);
         }
@@ -97,9 +105,9 @@ namespace FormBuilder.Controllers.Api
             return NoContent();
         }
 
-        private bool AttributeSchemaExists(int id)
+        private bool AttributeSchemaExists(string id)
         {
-            return _context.AttributeSchemas.Any(e => e.AttributeSchemaId == id);
+            return _context.AttributeSchemas.Any(e => e.AttributeSchemaId.ToString() == id);
         }
     }
 }

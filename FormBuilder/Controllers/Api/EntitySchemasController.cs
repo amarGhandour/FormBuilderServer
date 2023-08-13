@@ -11,6 +11,7 @@ using FormBuilder.ViewModels.EntityForm;
 using FormBuilder.ViewModels.EntitySchema;
 using FormBuilder.Interfaces.Repositories;
 using Microsoft.VisualBasic;
+using AutoMapper;
 
 namespace FormBuilder.Controllers.Api
 {
@@ -20,23 +21,30 @@ namespace FormBuilder.Controllers.Api
     {
         private readonly ApplicationDbContext _context;
         private readonly IEntitySchemaRepository entitySchemaRepository;
+        private readonly IMapper mapper;
 
-        public EntitySchemasController(ApplicationDbContext context, IEntitySchemaRepository entitySchemaRepository)
+        public EntitySchemasController(ApplicationDbContext context, IEntitySchemaRepository entitySchemaRepository, IMapper mapper)
         {
             _context = context;
             this.entitySchemaRepository = entitySchemaRepository;
+            this.mapper = mapper;
         }
 
         // GET: api/EntitySchemas
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EntitySchema>>> GetentitySchemas()
         {
-            return  Ok(await entitySchemaRepository.GetAllAsync());
+
+            var entitySchemasList = await entitySchemaRepository.GetAllAsync();
+
+            var response = mapper.Map<IEnumerable<EntitySchemaAllResponseVM>>(entitySchemasList);
+
+            return  Ok(response);
         }
 
         // GET: api/EntitySchemas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetEntitySchema(int id)
+        public async Task<ActionResult> GetEntitySchema(Guid id)
         {
             var entitySchema = await entitySchemaRepository.GetByIdAsync(id);
 
@@ -45,14 +53,14 @@ namespace FormBuilder.Controllers.Api
                 return NotFound();
             }
 
-            var entitySchemaVm = new EntitySchemaVM()
-            { EntityCode = entitySchema.EntityCode, EntitySchemaId = entitySchema.EntitySchemaId, EntityName = entitySchema.EntityName };
+            var entitySchemaVm = new EntitySchemaResponseVM()
+            { EntityCode = entitySchema.EntityCode, EntitySchemaId = entitySchema.EntitySchemaId.ToString(), EntityName = entitySchema.EntityName };
 
-            var attributesVM = new HashSet<AttributeSchemaVM>();
+            var attributesVM = new HashSet<AttributeSchemaResponseVM>();
             foreach (var attribute in entitySchema.AttributeSchemas)
             {
-                var attributeVm = new AttributeSchemaVM() { 
-                    Id = attribute.AttributeSchemaId,
+                var attributeVm = new AttributeSchemaResponseVM() { 
+                    Id = attribute.AttributeSchemaId.ToString(),
                     Type = attribute.AttributeType.AttributeName, DisplayName = attribute.DisplayName, IsRequired = attribute.IsRequired, Name = attribute.LogicalName
                 , MaxLen = attribute.MaxLen, MinLen = attribute.MinLen, Searchable = attribute.IsSearchable};
 
@@ -78,31 +86,17 @@ namespace FormBuilder.Controllers.Api
 
         // PUT: api/EntitySchemas/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEntitySchema(int id, EntitySchemaRequestVM entitySchemaRequest)
+        public async Task<IActionResult> PutEntitySchema(Guid id, EntitySchemaRequestVM entitySchemaRequest)
         {
-            var entitySchema = _context.entitySchemas.FirstOrDefault(e => e.EntitySchemaId == id);
-            if (id != entitySchema.EntitySchemaId)
+
+            var entitySchema = mapper.Map<EntitySchema>(entitySchemaRequest);
+
+            if (entitySchema == null)
             {
                 return BadRequest();
             }
 
-            _context.Entry(entitySchema).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EntitySchemaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            entitySchema = await entitySchemaRepository.EditAsync(id, entitySchema, es => es.EntitySchemaId);
 
             return NoContent();
         }
@@ -121,7 +115,7 @@ namespace FormBuilder.Controllers.Api
                 return BadRequest(ModelState);
             }
 
-            var entitySchema = new EntitySchema() { EntityName = entitySchemaRequest.EntityName, EntityCode = entitySchemaRequest.EntityCode};
+            var entitySchema = new EntitySchema() { EntityName = entitySchemaRequest.EntityName, DisplayName = entitySchemaRequest.DisplayName, EntityCode = entitySchemaRequest.EntityCode};
 
             _context.entitySchemas.Add(entitySchema);
 
@@ -132,21 +126,19 @@ namespace FormBuilder.Controllers.Api
 
         // DELETE: api/EntitySchemas/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEntitySchema(int id)
+        public async Task<IActionResult> DeleteEntitySchema(Guid id)
         {
-            var entitySchema = await _context.entitySchemas.FindAsync(id);
-            if (entitySchema == null)
+            var isDeleted = await entitySchemaRepository.DeleteAsync(id);
+            if (isDeleted)
             {
-                return NotFound();
+                return NoContent();
             }
 
-            _context.entitySchemas.Remove(entitySchema);
-            await _context.SaveChangesAsync();
+            return NotFound();
 
-            return NoContent();
         }
 
-        private bool EntitySchemaExists(int id)
+        private bool EntitySchemaExists(Guid id)
         {
             return _context.entitySchemas.Any(e => e.EntitySchemaId == id);
         }
@@ -154,45 +146,33 @@ namespace FormBuilder.Controllers.Api
 
         // GET: api/EntitySchemas/5/forms
         [HttpGet("{id}/forms")]
-        public async Task<ActionResult> GetEntityForms(int id)
+        public async Task<ActionResult> GetEntityForms(string id)
         {
-            var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId == id).ToListAsync();
+            var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId.ToString() == id).ToListAsync();
 
             var entityFormVms = new List<EntityFormVM>();
 
             foreach(var form in res)
             {
-                var formVm = new EntityFormVM() { EntityName = form.EntitySchema.EntityName, FormName = form.EntityFromsName, FormJson = form.FromJson, Id = form.EntityFromsId };
+                var formVm = new EntityFormVM() { EntityName = form.EntitySchema.EntityName, FormName = form.EntityFromsName, FormJson = form.FromJson, Id = form.EntityFromsId.ToString() };
                 entityFormVms.Add(formVm);
             }
 
             return Ok(entityFormVms);
         }
 
-        // GET: api/EntitySchemas/5/forms/default
-        //[HttpGet("{id}/forms/{formName}")]
-        //public async Task<ActionResult> GetEntityFormByName(int id, string formName)
-        //{
-        //    var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId == id).Where(e => e.EntityFromsName == formName).FirstOrDefaultAsync();
-
-        //    if (res == null)
-        //        return NotFound();
-
-        //   var formVm = new EntityFormVM() { EntityName = res.EntitySchema.EntityName, FormName = res.EntityFromsName, FormJson = res.FromJson, Id = res.EntityFromsId };
-  
-        //    return Ok(formVm);
-        //}
+     
 
         // GET: api/EntitySchemas/5/forms/1
         [HttpGet("{id}/forms/{formId}")]
-        public async Task<ActionResult> GetEntityFormById(int id, int formId)
+        public async Task<ActionResult> GetEntityFormById(string id, string formId)
         {
-            var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId == id && e.EntityFromsId == formId).FirstOrDefaultAsync();
+            var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId.ToString() == id && e.EntityFromsId.ToString() == formId).FirstOrDefaultAsync();
 
             if (res == null)
                 return NotFound();
 
-            var formVm = new EntityFormVM() { EntityName = res.EntitySchema.EntityName, FormName = res.EntityFromsName, FormJson = res.FromJson, Id = res.EntityFromsId };
+            var formVm = new EntityFormVM() { EntityName = res.EntitySchema.EntityName, FormName = res.EntityFromsName, FormJson = res.FromJson, Id = res.EntityFromsId.ToString() };
 
             return Ok(formVm);
         }

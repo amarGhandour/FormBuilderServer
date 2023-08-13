@@ -2,13 +2,13 @@
 
 namespace FormBuilder.ViewModels.EntityForm
 {
-    public class EntityFormCreateVM
+    public class EntityFormRequestVM
     {
         [Required]
         public string formName { get; set; }
 
         [Required]
-        public int EntityId { get; set; }
+        public Guid EntityId { get; set; }
 
         [Required]
         public string formJson { get; set; }

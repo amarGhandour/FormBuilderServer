@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FormBuilder.Models;
 using FormBuilder.ViewModels.EntityForm;
+using FormBuilder.Interfaces.Repositories;
+using AutoMapper;
 
 namespace FormBuilder.Controllers.Api
 {
@@ -15,10 +17,16 @@ namespace FormBuilder.Controllers.Api
     public class EntityFromsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEntityFormRepository entityFormRepository;
+        private readonly IEntitySchemaRepository entitySchemaRepository;
+        private readonly IMapper mapper;
 
-        public EntityFromsController(ApplicationDbContext context)
+        public EntityFromsController(ApplicationDbContext context, IEntityFormRepository entityFormRepository, IEntitySchemaRepository entitySchemaRepository, IMapper mapper)
         {
-            _context = context;
+            this.entityFormRepository = entityFormRepository;
+            this.entitySchemaRepository = entitySchemaRepository;
+            this.mapper = mapper;
+            this._context = context;
         }
 
         // GET: api/EntityFroms
@@ -51,40 +59,36 @@ namespace FormBuilder.Controllers.Api
 
         // PUT: api/EntityFroms/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEntityFroms(int id, EntityFroms entityFroms)
+        public async Task<IActionResult> PutEntityFroms(Guid id, EntityFormRequestVM entityFormRequest)
         {
-            if (id != entityFroms.EntityFromsId)
+
+            var entityFormFound = await entityFormRepository.FindAsync(id);
+
+            if (entityFormFound == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(entityFroms).State = EntityState.Modified;
+            var entitySchema = entitySchemaRepository.GetByIdAsync(entityFormRequest.EntityId);
 
-            try
+            if (entitySchema == null)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EntityFromsExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
+            var entityForm = mapper.Map<EntityFroms>(entityFormRequest);
+
+            await entityFormRepository.EditAsync(id ,entityForm, e => e.EntityFromsId);
 
             return NoContent();
         }
 
         // POST: api/EntityFroms
         [HttpPost]
-        public async Task<ActionResult<EntityFroms>> PostEntityFroms(EntityFormCreateVM entityFormVm)
+        public async Task<ActionResult<EntityFroms>> PostEntityFroms(EntityFormRequestVM entityFormRequestVm)
         {
             
-            if (entityFormVm == null)
+            if (entityFormRequestVm == null)
             {
                 return BadRequest();
             }
@@ -95,39 +99,35 @@ namespace FormBuilder.Controllers.Api
 
             }
 
+
             // check entity schema is exist
-            var entitySchema =  _context.entitySchemas.FirstOrDefault(e => e.EntitySchemaId == entityFormVm.EntityId);
+            var entitySchema = entitySchemaRepository.GetByIdAsync(entityFormRequestVm.EntityId);
             if (entitySchema == null)
                 return BadRequest("Entity Id does't exist.");
 
+            var entityForm = mapper.Map<EntityFroms>(entityFormRequestVm);
 
-            var entityFormJson = new EntityFroms() { EntityFromsName = entityFormVm.formName, EntitySchemaId = entityFormVm.EntityId, FromJson = entityFormVm.formJson };
-
-            _context.EntityFroms.Add(entityFormJson);
-
-            await _context.SaveChangesAsync();
-
+            var entityFormJson = entityFormRepository.AddAsync(entityForm);
 
             return Created("GetEntityFroms", null);
         }
 
         // DELETE: api/EntityFroms/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEntityFroms(int id)
+        public async Task<IActionResult> DeleteEntityFroms(Guid id)
         {
-            var entityFroms = await _context.EntityFroms.FindAsync(id);
+            var entityFroms = entityFormRepository.GetByIdAsync(id);
             if (entityFroms == null)
             {
                 return NotFound();
             }
 
-            _context.EntityFroms.Remove(entityFroms);
-            await _context.SaveChangesAsync();
+            await entityFormRepository.DeleteAsync(entityFroms);
 
             return NoContent();
         }
 
-        private bool EntityFromsExists(int id)
+        private bool EntityFromsExists(Guid id)
         {
             return _context.EntityFroms.Any(e => e.EntityFromsId == id);
         }

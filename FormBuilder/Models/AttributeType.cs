@@ -7,11 +7,13 @@ namespace FormBuilder.Models
 
     public class AttributeType: IEntityBase, ISoftDeletable
     {
-        public int AttributeTypeId { get; set; }
+        public Guid AttributeTypeId { get; set; }
 
         public string AttributeName { get; set; }
 
         public string SqlType { get; set; }
+
+        public ICollection<AttributeSchema> AttributeSchemas { get; set; } = new HashSet<AttributeSchema>();
 
     }
 }

@@ -8,6 +8,10 @@ namespace FormBuilder.ViewModels.EntitySchema
         public string EntityName { get; set; }
 
         [Required]
+        public string DisplayName { get; set; }
+
+
+        [Required]
         public int EntityCode { get; set; }
     }
 }

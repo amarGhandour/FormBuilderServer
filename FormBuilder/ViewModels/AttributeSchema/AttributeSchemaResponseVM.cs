@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FormBuilder.ViewModels.AttributeSchema
 {
-    public class AttributeSchemaVM
+    public class AttributeSchemaResponseVM
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string Name { get; set; }
 
@@ -18,7 +18,6 @@ namespace FormBuilder.ViewModels.AttributeSchema
         public int? MinLen { get; set; }
         public bool Searchable { get; set; } = false;
 
-        //public bool Active { get; set; } = false;
         public string Type { get; set; }
 
         public Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
