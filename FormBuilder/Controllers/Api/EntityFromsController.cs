@@ -45,7 +45,7 @@ namespace FormBuilder.Controllers.Api
 
         // GET: api/EntityFroms/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<EntityFroms>> GetEntityFroms(int id)
+        public async Task<ActionResult<EntityFroms>> GetEntityFroms(Guid id)
         {
             var entityFroms = await _context.EntityFroms.FindAsync(id);
 
@@ -69,7 +69,7 @@ namespace FormBuilder.Controllers.Api
                 return NotFound();
             }
 
-            var entitySchema = entitySchemaRepository.GetByIdAsync(entityFormRequest.EntityId);
+            var entitySchema = await entitySchemaRepository.GetByIdAsync(entityFormRequest.EntityId);
 
             if (entitySchema == null)
             {
