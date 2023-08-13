@@ -16,45 +16,47 @@ namespace FormBuilder.Controllers.Api
     [ApiController]
     public class EntityFromsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        
         private readonly IEntityFormRepository entityFormRepository;
         private readonly IEntitySchemaRepository entitySchemaRepository;
         private readonly IMapper mapper;
 
-        public EntityFromsController(ApplicationDbContext context, IEntityFormRepository entityFormRepository, IEntitySchemaRepository entitySchemaRepository, IMapper mapper)
+        public EntityFromsController( IEntityFormRepository entityFormRepository, IEntitySchemaRepository entitySchemaRepository, IMapper mapper)
         {
             this.entityFormRepository = entityFormRepository;
             this.entitySchemaRepository = entitySchemaRepository;
             this.mapper = mapper;
-            this._context = context;
+            
         }
 
         // GET: api/EntityFroms
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EntityFroms>>> GetEntityFroms(string formName)
         {
-            var query = _context.EntityFroms.AsQueryable();
+            //var query = _context.EntityFroms.AsQueryable();
 
-            if (formName != null)
-            {
-               query = query.Where(e => e.EntityFromsName == formName);
-            }
+            //if (formName != null)
+            //{
+            //   query = query.Where(e => e.EntityFromsName == formName);
+            //}
 
-            return await query.ToListAsync();
+            //return await query.ToListAsync();
+            return Ok();
         }
 
         // GET: api/EntityFroms/5
         [HttpGet("{id}")]
         public async Task<ActionResult<EntityFroms>> GetEntityFroms(int id)
         {
-            var entityFroms = await _context.EntityFroms.FindAsync(id);
+            //var entityFroms = await _context.EntityFroms.FindAsync(id);
 
-            if (entityFroms == null)
-            {
-                return NotFound();
-            }
+            //if (entityFroms == null)
+            //{
+            //    return NotFound();
+            //}
 
-            return entityFroms;
+            //return entityFroms;
+            return Ok();
         }
 
         // PUT: api/EntityFroms/5
@@ -99,17 +101,17 @@ namespace FormBuilder.Controllers.Api
 
             }
 
-
-            // check entity schema is exist
-            var entitySchema = entitySchemaRepository.GetByIdAsync(entityFormRequestVm.EntityId);
+            var entitySchema = await entitySchemaRepository.GetByIdAsync(entityFormRequestVm.EntityId);
             if (entitySchema == null)
                 return BadRequest("Entity Id does't exist.");
 
             var entityForm = mapper.Map<EntityFroms>(entityFormRequestVm);
 
-            var entityFormJson = entityFormRepository.AddAsync(entityForm);
+            var entityFormJson = await entityFormRepository.AddAsync(entityForm);
 
-            return Created("GetEntityFroms", null);
+            var entityFormResponseVm = mapper.Map<EntityFormResponseVM>(entityFormJson);
+
+            return CreatedAtAction("GetEntityFroms", new { id = entityFormJson.EntityFromsId }, entityFormResponseVm);
         }
 
         // DELETE: api/EntityFroms/5
@@ -129,7 +131,8 @@ namespace FormBuilder.Controllers.Api
 
         private bool EntityFromsExists(Guid id)
         {
-            return _context.EntityFroms.Any(e => e.EntityFromsId == id);
+            //return _context.EntityFroms.Any(e => e.EntityFromsId == id);
+            return true;
         }
     }
 }

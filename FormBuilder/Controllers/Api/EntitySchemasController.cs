@@ -150,11 +150,11 @@ namespace FormBuilder.Controllers.Api
         {
             var res = await _context.EntityFroms.Include(e => e.EntitySchema).Where(e => e.EntitySchemaId.ToString() == id).ToListAsync();
 
-            var entityFormVms = new List<EntityFormVM>();
+            var entityFormVms = new List<EntityFormResponseVM>();
 
             foreach(var form in res)
             {
-                var formVm = new EntityFormVM() { EntityName = form.EntitySchema.EntityName, FormName = form.EntityFromsName, FormJson = form.FromJson, Id = form.EntityFromsId.ToString() };
+                var formVm = new EntityFormResponseVM() { EntityName = form.EntitySchema.EntityName, FormName = form.EntityFromsName, FormJson = form.FromJson, Id = form.EntityFromsId.ToString() };
                 entityFormVms.Add(formVm);
             }
 
@@ -172,7 +172,7 @@ namespace FormBuilder.Controllers.Api
             if (res == null)
                 return NotFound();
 
-            var formVm = new EntityFormVM() { EntityName = res.EntitySchema.EntityName, FormName = res.EntityFromsName, FormJson = res.FromJson, Id = res.EntityFromsId.ToString() };
+            var formVm = new EntityFormResponseVM() { EntityName = res.EntitySchema.EntityName, FormName = res.EntityFromsName, FormJson = res.FromJson, Id = res.EntityFromsId.ToString() };
 
             return Ok(formVm);
         }
