@@ -13,6 +13,12 @@ namespace FormBuilder.Models.Tables
 
         public decimal Salary { get; set; }
 
+        public int Gender { get; set; } 
+
+        public int SocialStatus { get; set; }
+
+        public string Notes { get; set; }
+
         public DateTime StartDate { get; set; }
 
         [ForeignKey("Department")]
