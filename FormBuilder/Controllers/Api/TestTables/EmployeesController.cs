@@ -52,6 +52,7 @@ namespace FormBuilder.Controllers.Api.TestTables
             {
                 return BadRequest();
             }
+            employee.Id = id;
 
             _context.Entry(employee).State = EntityState.Modified;
 
@@ -97,10 +98,12 @@ namespace FormBuilder.Controllers.Api.TestTables
                 FirstName = employeeRequestVM.FirstName,
                 LastName = employeeRequestVM.LastName,
                 Salary = employeeRequestVM.Salary,
+                Email = employeeRequestVM.Email,
+                Password = employeeRequestVM.Password,
                 StartDate = employeeRequestVM.StartDate,
                 Gender = employeeRequestVM.Gender,
                 Notes = employeeRequestVM.Notes,
-                SocialStatus = employeeRequestVM.SocialStatus,
+                SocialStatus = employeeRequestVM.SocialStatus
             };
 
 

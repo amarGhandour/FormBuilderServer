@@ -19,6 +19,8 @@ namespace FormBuilder.Models.Tables
 
         public string Notes { get; set; }
 
+        public string Email { get; set; }
+        public string Password { get; set; }
         public DateTime StartDate { get; set; }
 
         [ForeignKey("Department")]
