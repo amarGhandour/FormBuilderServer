@@ -46,17 +46,38 @@ namespace FormBuilder.Controllers.Api.TestTables
         // PUT: api/Employees/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployee(int id, Employee employee)
+		public async Task<IActionResult> PutEmployee(int id, EmployeeRequestVM employeeRequestVM)
         {
-            if (id != employee.Id)
-            {
-                return BadRequest();
-            }
-            employee.Id = id;
+			if (employeeRequestVM == null)
+			{
+				return BadRequest();
+			}
 
-            _context.Entry(employee).State = EntityState.Modified;
+			var department = _context.Departments.FirstOrDefault(e => e.Id == employeeRequestVM.DepartmentId);
 
-            try
+			if (department == null)
+			{
+				return BadRequest("no department with this id");
+			}
+
+			var employee = new Employee()
+			{
+                Id = id,
+				DepartmentId = employeeRequestVM.DepartmentId,
+				FirstName = employeeRequestVM.FirstName,
+				LastName = employeeRequestVM.LastName,
+				Salary = employeeRequestVM.Salary,
+				Email = employeeRequestVM.Email,
+				Password = employeeRequestVM.Password,
+				StartDate = employeeRequestVM.StartDate,
+				Gender = employeeRequestVM.Gender,
+				Notes = employeeRequestVM.Notes,
+				SocialStatus = employeeRequestVM.SocialStatus
+			};
+
+
+			_context.Entry(employee).State = EntityState.Modified;
+			try
             {
                 await _context.SaveChangesAsync();
             }
@@ -74,10 +95,38 @@ namespace FormBuilder.Controllers.Api.TestTables
 
             return NoContent();
         }
+		//public async Task<IActionResult> PutEmployee(int id, Employee employee)
+		//{
+		//    if (id != employee.Id)
+		//    {
+		//        return BadRequest();
+		//    }
+		//    employee.Id = id;
 
-        // POST: api/Employees
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+		//    _context.Entry(employee).State = EntityState.Modified;
+
+		//    try
+		//    {
+		//        await _context.SaveChangesAsync();
+		//    }
+		//    catch (DbUpdateConcurrencyException)
+		//    {
+		//        if (!EmployeeExists(id))
+		//        {
+		//            return NotFound();
+		//        }
+		//        else
+		//        {
+		//            throw;
+		//        }
+		//    }
+
+		//    return NoContent();
+		//}
+
+		// POST: api/Employees
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPost]
         public async Task<ActionResult<Employee>> PostEmployee(EmployeeRequestVM employeeRequestVM)
         {
             if (employeeRequestVM == null)
