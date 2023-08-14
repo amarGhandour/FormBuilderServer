@@ -18,5 +18,11 @@ namespace FormBuilder.ViewModels.Employee
 
         [Required]
         public int DepartmentId { get; set; }
+
+        public int Gender { get; set; }
+
+        public int SocialStatus { get; set; }
+
+        public string Notes { get; set; }
     }
 }

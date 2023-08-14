@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FormBuilder.Models;
 using FormBuilder.Models.Tables;
+using FormBuilder.ViewModels.Employee;
 
 namespace FormBuilder.Controllers.Api.TestTables
 {
@@ -76,12 +77,47 @@ namespace FormBuilder.Controllers.Api.TestTables
         // POST: api/Employees
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        public async Task<ActionResult<Employee>> PostEmployee(EmployeeRequestVM employeeRequestVM)
         {
+            if (employeeRequestVM == null)
+            {
+                return BadRequest();
+            }
+
+            var department = _context.Departments.FirstOrDefault(e => e.Id == employeeRequestVM.DepartmentId);
+
+            if (department == null)
+            {
+                return BadRequest("no department with this id");
+            }
+
+            var employee = new Employee()
+            {
+                DepartmentId = employeeRequestVM.DepartmentId,
+                FirstName = employeeRequestVM.FirstName,
+                LastName = employeeRequestVM.LastName,
+                Salary = employeeRequestVM.Salary,
+                StartDate = employeeRequestVM.StartDate,
+                Gender = employeeRequestVM.Gender,
+                Notes = employeeRequestVM.Notes,
+                SocialStatus = employeeRequestVM.SocialStatus,
+            };
+
+
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEmployee", new { id = employee.Id }, employee);
+            var employeeResponse = new EmployeeResponseVM()
+            {
+                departmentName = department.Name,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Id = employee.Id,
+                Salary = employee.Salary,
+                StartDate = employee.StartDate
+                
+            };
+            return CreatedAtAction("GetEmployee", new { id = employee.Id }, employeeResponse);
         }
 
         // DELETE: api/Employees/5
