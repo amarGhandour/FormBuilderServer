@@ -1,4 +1,5 @@
 ﻿using FormBuilder.Models;
+using FormBuilder.ViewModels.lookup;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FormBuilder.ViewModels.AttributeSchema
@@ -21,6 +22,8 @@ namespace FormBuilder.ViewModels.AttributeSchema
         public string Type { get; set; }
 
         public Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
+
+        public LookupResponseVm Lookup { get; set; }
 
     }
 }

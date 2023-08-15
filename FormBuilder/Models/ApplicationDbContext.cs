@@ -2,6 +2,7 @@
 using FormBuilder.Models.Tables;
 using FormBuilder.ViewModels.EntityForm;
 using Microsoft.EntityFrameworkCore;
+using FormBuilder.Models;
 
 namespace FormBuilder.Models
 {
@@ -27,6 +28,10 @@ namespace FormBuilder.Models
         public DbSet<Employee> Employees { get; set; }
 
         public DbSet<Department> Departments { get; set; }
+
+        public DbSet<EntityView> EntityViews { get; set; }
+
+        public DbSet<Lookup> Lookups { get; set; }
 
 
 
@@ -118,6 +123,9 @@ namespace FormBuilder.Models
 
 
         }
+
+
+
 
 
     }

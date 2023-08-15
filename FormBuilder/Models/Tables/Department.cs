@@ -6,6 +6,8 @@
 
         public string Name { get; set; }
 
+        public string Place { get; set; }
+
         public ICollection<Employee> Employees { get; set; } = new HashSet<Employee>();
     }
 }

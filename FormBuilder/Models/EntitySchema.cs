@@ -13,5 +13,7 @@ namespace FormBuilder.Models
         public ICollection<AttributeSchema> AttributeSchemas { get; set; } = new HashSet<AttributeSchema>();
 
         public ICollection<EntityFroms> EntityFroms { get; set; } = new HashSet<EntityFroms>();
+
+        public ICollection<EntityView> EntityViews { get; set; }  = new HashSet<EntityView>();
     }
 }

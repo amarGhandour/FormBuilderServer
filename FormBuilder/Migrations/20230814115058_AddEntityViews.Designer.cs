@@ -4,6 +4,7 @@ using FormBuilder.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FormBuilder.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230814115058_AddEntityViews")]
+    partial class AddEntityViews
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,9 +49,6 @@ namespace FormBuilder.Migrations
                     b.Property<bool>("IsSearchable")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("LookupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int?>("MaxLen")
                         .HasColumnType("int");
 
@@ -61,8 +61,6 @@ namespace FormBuilder.Migrations
                     b.HasKey("EntitySchemaId", "LogicalName");
 
                     b.HasIndex("AttributeTypeId");
-
-                    b.HasIndex("LookupId");
 
                     b.HasIndex("OptionSetTypeId");
 
@@ -156,28 +154,6 @@ namespace FormBuilder.Migrations
                     b.ToTable("EntityViews");
                 });
 
-            modelBuilder.Entity("FormBuilder.Models.Lookup", b =>
-                {
-                    b.Property<Guid>("LookupId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ChildTableId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ParentTableId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("relationShipName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("LookupId");
-
-                    b.HasIndex("ParentTableId");
-
-                    b.ToTable("Lookups");
-                });
-
             modelBuilder.Entity("FormBuilder.Models.OptionSetType", b =>
                 {
                     b.Property<Guid>("Id")
@@ -225,9 +201,6 @@ namespace FormBuilder.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Place")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -288,10 +261,6 @@ namespace FormBuilder.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FormBuilder.Models.Lookup", "Lookup")
-                        .WithMany()
-                        .HasForeignKey("LookupId");
-
                     b.HasOne("FormBuilder.Models.OptionSetType", "OptionSetType")
                         .WithMany("AttributeSchemas")
                         .HasForeignKey("OptionSetTypeId");
@@ -299,8 +268,6 @@ namespace FormBuilder.Migrations
                     b.Navigation("AttributeType");
 
                     b.Navigation("EntitySchema");
-
-                    b.Navigation("Lookup");
 
                     b.Navigation("OptionSetType");
                 });
@@ -325,17 +292,6 @@ namespace FormBuilder.Migrations
                         .IsRequired();
 
                     b.Navigation("EntitySchema");
-                });
-
-            modelBuilder.Entity("FormBuilder.Models.Lookup", b =>
-                {
-                    b.HasOne("FormBuilder.Models.EntitySchema", "ParentTable")
-                        .WithMany()
-                        .HasForeignKey("ParentTableId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ParentTable");
                 });
 
             modelBuilder.Entity("FormBuilder.Models.OptionSetValue", b =>

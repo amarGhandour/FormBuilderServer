@@ -31,6 +31,10 @@ namespace FormBuilder.Models
         public Guid? OptionSetTypeId { get; set; }
         public OptionSetType OptionSetType { get; set; }
 
+        [ForeignKey("Lookup")]
+        public Guid? LookupId { get; set; }
+
+        public Lookup Lookup { get; set; }
 
 
     }

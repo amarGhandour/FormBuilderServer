@@ -12,6 +12,10 @@ using FormBuilder.ViewModels.EntitySchema;
 using FormBuilder.Interfaces.Repositories;
 using Microsoft.VisualBasic;
 using AutoMapper;
+using FormBuilder.ViewModels.lookup;
+using FormBuilder.Models.Tables;
+using System.Data;
+using Microsoft.Data.SqlClient;
 
 namespace FormBuilder.Controllers.Api
 {
@@ -75,6 +79,22 @@ namespace FormBuilder.Controllers.Api
                         attributeVm.Options.Add(option.Name, option.Value);
                     }
 
+                }else if (attribute.AttributeType.AttributeName == "lookup")
+                {
+                    var lookupId = attribute.LookupId;
+                    var lookup = await _context.Lookups.Include(e => e.ParentTable).ThenInclude(e => e.EntityViews).FirstOrDefaultAsync(e => e.LookupId == lookupId);
+
+                    if (lookup != null)
+                    {
+                        var views = lookup.ParentTable.EntityViews;
+                        var lookupResponse = new LookupResponseVm() { LookFor = lookup.ParentTable.EntityName, LookupId = lookup.LookupId };
+
+                        foreach (var view in views)
+                        {
+                            lookupResponse.Views.Add(view.Name);
+                        }
+                        attributeVm.Lookup = lookupResponse;
+                    }
 
                 }
                 attributesVM.Add(attributeVm);
@@ -177,5 +197,26 @@ namespace FormBuilder.Controllers.Api
             return Ok(formVm);
         }
 
+        [HttpGet("{entityId}/views")]
+        public async Task<ActionResult> GetEntityViews(Guid entityId)
+        {
+            var res = await _context.EntityViews.Where(e => e.EntitySchemaId == entityId).ToListAsync();
+
+            return Ok(res);
+        }
+
+
+        [HttpGet("viewData")]
+        public async Task<ActionResult> GetViewData(string viewName)
+        {
+            string sqlQuery = $"SELECT * FROM {viewName}";
+
+            string table = "Department";
+            Type entityType = Type.GetType(table);
+
+            var res = await _context.Database.SqlQueryRaw<SqlDataAdapter>(sqlQuery).ToListAsync();
+
+            return Ok(res);
+        }
     }
 }
