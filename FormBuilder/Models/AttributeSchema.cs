@@ -33,8 +33,11 @@ namespace FormBuilder.Models
 
         [ForeignKey("Lookup")]
         public Guid? LookupId { get; set; }
-
         public Lookup Lookup { get; set; }
+
+        [ForeignKey("GlobalSettings")]
+        public Guid? UrlId { get; set; }
+        public GlobalSettings GlobalSettings { get; set; }
 
 
     }

@@ -8,24 +8,17 @@ namespace FormBuilder.ViewModels.Employee
     {
         [Required]
         public string FirstName { get; set; }
-
         public string LastName { get; set; }
-
         [Required]
         public decimal Salary { get; set; }
-
         public DateTime StartDate { get; set; }
-
         [Required]
         public int DepartmentId { get; set; }
-
         public int Gender { get; set; }
-
         public int SocialStatus { get; set; }
-
         public string Notes { get; set; }
-
         public string Email { get; set; }
         public string Password { get; set; }
+        public string Image { get; set; }
     }
 }

@@ -20,10 +20,8 @@ namespace FormBuilder.Models
 
         public DbSet<OptionSetType> OptionSets { get; set; }    
         public DbSet<OptionSetValue> OptionSetValues { get; set; }
-
+        public DbSet<GlobalSettings> GlobalSettings { get; set; }
        
-
-
         // tables entities
         public DbSet<Employee> Employees { get; set; }
 
