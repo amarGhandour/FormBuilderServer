@@ -87,7 +87,7 @@ namespace FormBuilder.Controllers.Api
                     if (lookup != null)
                     {
                         var views = lookup.ParentTable.EntityViews;
-                        var lookupResponse = new LookupResponseVm() { LookFor = lookup.ParentTable.EntityName, LookupId = lookup.LookupId };
+                        var lookupResponse = new LookupResponseVm() { LookFor = lookup.ParentTable.EntityName, LookForId = lookup.ParentTableId, LookupId = lookup.LookupId };
 
                         foreach (var view in views)
                         {
@@ -214,7 +214,7 @@ namespace FormBuilder.Controllers.Api
             string table = "Department";
             Type entityType = Type.GetType(table);
 
-            var res = await _context.Database.SqlQueryRaw<SqlDataAdapter>(sqlQuery).ToListAsync();
+            var res = await _context.Departments.FromSqlRaw(sqlQuery).ToListAsync();
 
             return Ok(res);
         }

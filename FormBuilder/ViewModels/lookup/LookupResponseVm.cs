@@ -6,6 +6,8 @@
 
         public string LookFor { get; set; }
 
+        public Guid LookForId { get; set; }
+
         public ICollection<string> Views { get; set; } = new HashSet<string>();
     }
 }
