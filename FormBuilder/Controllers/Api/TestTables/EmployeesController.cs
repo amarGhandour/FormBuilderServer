@@ -35,6 +35,7 @@ namespace FormBuilder.Controllers.Api.TestTables
         {
             var employee = await _context.Employees.FindAsync(id);
 
+           // var ImageUrl = $"{}";
             if (employee == null)
             {
                 return NotFound();
@@ -192,5 +193,11 @@ namespace FormBuilder.Controllers.Api.TestTables
         {
             return _context.Employees.Any(e => e.Id == id);
         }
+
+        //[HttpGet("/GetImageUrl")]
+        //public async Task<IActionResult> GetImage(int empId)
+        //{
+
+        //}
     }
 }
