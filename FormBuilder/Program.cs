@@ -2,6 +2,7 @@ using FormBuilder.Interfaces.Repositories;
 using FormBuilder.Models;
 using FormBuilder.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +33,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(option =>
+{
+	option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+});
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();

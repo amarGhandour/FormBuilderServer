@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using FormBuilder.Models;
 using FormBuilder.Models.Tables;
 using FormBuilder.ViewModels.Employee;
+using System.Drawing;
 
 namespace FormBuilder.Controllers.Api.TestTables
 {
@@ -16,17 +17,32 @@ namespace FormBuilder.Controllers.Api.TestTables
     public class EmployeesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public EmployeesController(ApplicationDbContext context)
+		public EmployeesController(ApplicationDbContext context, 
+                                  IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
-        }
+			_webHostEnvironment = webHostEnvironment;
+		}
 
         // GET: api/Employees
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
-            return await _context.Employees.ToListAsync();
+            var employees = await _context.Employees.ToListAsync();
+            var baseImageUrl = await GetBaseImageUrl();
+            if(baseImageUrl != null)
+            {
+				employees.ForEach(emp =>
+                {
+                    if(emp.Image != null)
+                    {
+                        emp.Image = $"{baseImageUrl.Url}/{emp.Image}";
+                    }
+				});
+            }
+            return Ok(employees);
         }
 
         // GET: api/Employees/5
@@ -39,6 +55,15 @@ namespace FormBuilder.Controllers.Api.TestTables
             if (employee == null)
             {
                 return NotFound();
+            }
+            var baseImageUrl = await GetBaseImageUrl();
+            if (baseImageUrl == null || employee.Image == null)
+            {
+                employee.Image = null;
+            }
+            else
+            {
+                employee.Image = $"{baseImageUrl.Url}/{employee.Image}";
             }
 
             return employee;
@@ -96,40 +121,14 @@ namespace FormBuilder.Controllers.Api.TestTables
 
             return NoContent();
         }
-		//public async Task<IActionResult> PutEmployee(int id, Employee employee)
-		//{
-		//    if (id != employee.Id)
-		//    {
-		//        return BadRequest();
-		//    }
-		//    employee.Id = id;
-
-		//    _context.Entry(employee).State = EntityState.Modified;
-
-		//    try
-		//    {
-		//        await _context.SaveChangesAsync();
-		//    }
-		//    catch (DbUpdateConcurrencyException)
-		//    {
-		//        if (!EmployeeExists(id))
-		//        {
-		//            return NotFound();
-		//        }
-		//        else
-		//        {
-		//            throw;
-		//        }
-		//    }
-
-		//    return NoContent();
-		//}
-
 		// POST: api/Employees
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(EmployeeRequestVM employeeRequestVM)
+        public async Task<ActionResult<Employee>> PostEmployee([FromForm] EmployeeRequestVM employeeRequestVM)
         {
+            string image = null;
+            var baseImageUrl = await GetBaseImageUrl();
+
             if (employeeRequestVM == null)
             {
                 return BadRequest();
@@ -140,6 +139,22 @@ namespace FormBuilder.Controllers.Api.TestTables
             if (department == null)
             {
                 return BadRequest("no department with this id");
+            }
+            if(employeeRequestVM.Image != null)
+            {
+                image = employeeRequestVM.Image.FileName;
+            }
+
+            if(baseImageUrl == null)
+            {
+                image = null;
+            }
+            else
+            {
+               // var imageUrl = baseImageUrl.Url + '/' + employeeRequestVM.Image.FileName;
+				var imagePath = Path.Combine(baseImageUrl.Url, employeeRequestVM.Image.FileName);
+                await employeeRequestVM.Image.CopyToAsync(new FileStream(imagePath, FileMode.Create));
+
             }
 
             var employee = new Employee()
@@ -153,7 +168,8 @@ namespace FormBuilder.Controllers.Api.TestTables
                 StartDate = employeeRequestVM.StartDate,
                 Gender = employeeRequestVM.Gender,
                 Notes = employeeRequestVM.Notes,
-                SocialStatus = employeeRequestVM.SocialStatus
+                SocialStatus = employeeRequestVM.SocialStatus,
+                Image = image
             };
 
 
@@ -194,10 +210,10 @@ namespace FormBuilder.Controllers.Api.TestTables
             return _context.Employees.Any(e => e.Id == id);
         }
 
-        //[HttpGet("/GetImageUrl")]
-        //public async Task<IActionResult> GetImage(int empId)
-        //{
-
-        //}
+        private async Task<GlobalSettings> GetBaseImageUrl()
+        {
+            var baseImageUrl = _context.GlobalSettings.FirstOrDefault(url => url.UrlType == "Image");
+            return baseImageUrl;
+        }
     }
 }
